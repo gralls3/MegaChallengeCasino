@@ -31,7 +31,7 @@
             2 Cherries - x3 Your Bet<br />
             3 Cherries - x4 Your Bet<br />
             4 7s - Jackpot - x100 Your Bet<br />
-            HOWERVER ... If there&#39;s even one bar, you win nothing.</div>
+            HOWEVER ... If there&#39;s even one bar, you win nothing.</div>
     </form>
 </body>
 </html>

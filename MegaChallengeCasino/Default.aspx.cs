@@ -56,36 +56,88 @@ namespace MegaChallengeCasino
 
         protected void leverButton_Click(object sender, EventArgs e)
         {
-            //When lever button pressed, generate images
-            //Then calculate win/loss
-            //Display result to player
+            generateAllImages();
+            determineWinLoss();
+        }
+
+        private void generateAllImages()
+        {
             generateImage1();
+            generateImage2();
+            generateImage3();
         }
 
         private void generateImage1()
         {
-            int index = rnd.Next(0, imageURLs.Length);
-            slotImage1.ImageUrl = imageURLs[index];
-            string image1 = slotImage1.ImageUrl.ToString();
-            calculateBetResult(image1);
+            generateImageURL(out string imageURLvar);
+            slotImage1.ImageUrl = imageURLvar;
         }
 
-        private void calculateBetResult(string image1)
+        private void generateImage2()
+        {
+            generateImageURL(out string imageURLvar);
+            slotImage2.ImageUrl = imageURLvar;
+        }
+
+        private void generateImage3()
+        {
+            generateImageURL(out string imageURLvar);
+            slotImage3.ImageUrl = imageURLvar;
+        }
+
+        private void generateImageURL(out string imageURLvar)
+        {
+            int index = rnd.Next(0, imageURLs.Length);
+            imageURLvar = imageURLs[index];
+        }
+
+        private void determineWinLoss()
         {//If image1 is bar, lose. If cherry, x2. If 7, x100.
             bet = decimal.Parse(betTextBox.Text);
-            if (image1 == bar)
+            if (slotImage1.ImageUrl == bar//if any bars, x0
+                || slotImage2.ImageUrl == bar
+                || slotImage3.ImageUrl == bar)
             {
                 multiplier = 0;
             }
-            else if (image1 == cherry)
+            else if ((slotImage1.ImageUrl == cherry//if cherry in 1 or,
+                && slotImage2.ImageUrl != cherry
+                && slotImage3.ImageUrl != cherry)
+                || (slotImage1.ImageUrl != cherry
+                && slotImage2.ImageUrl == cherry//or cherry in 2 or,
+                && slotImage3.ImageUrl != cherry)
+                || (slotImage1.ImageUrl != cherry
+                && slotImage2.ImageUrl != cherry
+                && slotImage3.ImageUrl == cherry))//or cherry in 3, x2
             {
                 multiplier = 2;
             }
-            else if (image1 == seven)
+            else if ((slotImage1.ImageUrl == cherry //if cherry in 1
+              && slotImage2.ImageUrl == cherry//and 2, or
+              && slotImage3.ImageUrl != cherry)
+              || (slotImage1.ImageUrl == cherry//if cherry in 1
+              && slotImage2.ImageUrl != cherry
+              && slotImage3.ImageUrl == cherry)//and 3, or
+              || (slotImage1.ImageUrl != cherry
+              && slotImage2.ImageUrl == cherry//if cherry in 2
+              && slotImage3.ImageUrl == cherry))//and 3, x3
+            {
+                multiplier = 3;
+            }
+            else if ((slotImage1.ImageUrl == cherry//if cherry in all 3,
+              && slotImage2.ImageUrl == cherry//x4
+              && slotImage3.ImageUrl == cherry))
+            {
+                multiplier = 4;
+            }
+            else if (slotImage1.ImageUrl == seven//if seven in all 3,
+              && slotImage2.ImageUrl == seven//x100
+              && slotImage3.ImageUrl == seven)
             {
                 multiplier = 100;
             }
             else multiplier = 0;
+
             winnings = bet * multiplier;
             displayBetResult(bet, winnings);
         }
