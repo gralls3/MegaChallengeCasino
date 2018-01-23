@@ -9,25 +9,11 @@ namespace MegaChallengeCasino
 {
     public partial class Default : System.Web.UI.Page
     {
-
         //Global variables:
-        Random rnd = new Random(); //Used to randomly grab slot images from above array
-        Decimal playerBalance = 100; //Used to keep track of player $ balance
-        Decimal bet = 0;
-        Decimal multiplier = 0;
-        Decimal winnings = 0;
+        Random rnd = new Random();//Used to randomly grab slot images from above array
         String bar = "Images/Bar.png";
-        String bell = "Images/Bell.png";
         String cherry = "Images/Cherry.png";
-        String clover = "Images/Clover.png";
-        String diamond = "Images/Diamond.png";
-        String horseshoe = "Images/HorseShoe.png";
-        String lemon = "Images/Lemon.png";
-        String orange = "Images/Orange.png";
-        String plum = "Images/Plum.png";
         String seven = "Images/Seven.png";
-        String strawberry = "Images/Strawberry.png";
-        String watermellon = "Images/Watermellon.png";
 
         String[] imageURLs ={
             //Create Array of URLs of slot images
@@ -45,19 +31,17 @@ namespace MegaChallengeCasino
                 slotImage1.ImageUrl = bar;
                 slotImage2.ImageUrl = bar;
                 slotImage3.ImageUrl = bar;
-                displayBalance(playerBalance);
+                playerBalance = 100;
+                moneyLabel.Text = String.Format("{0}", 100);
             }
         }
 
-        private void displayBalance(Decimal playerBalance)
-        {
-            moneyLabel.Text = String.Format("{0:C}", playerBalance);
-        }
+        Decimal playerBalance; //Used to keep track of player $ balance
 
         protected void leverButton_Click(object sender, EventArgs e)
         {
             generateAllImages();
-            determineWinLoss();
+            determineMultiplier();
         }
 
         private void generateAllImages()
@@ -91,67 +75,76 @@ namespace MegaChallengeCasino
             imageURLvar = imageURLs[index];
         }
 
-        private void determineWinLoss()
-        {//If image1 is bar, lose. If cherry, x2. If 7, x100.
-            bet = decimal.Parse(betTextBox.Text);
+        private void determineMultiplier()
+        {
+            decimal bet = decimal.Parse(betTextBox.Text);
+            decimal multiplier = 0;
             if (slotImage1.ImageUrl == bar//if any bars, x0
                 || slotImage2.ImageUrl == bar
                 || slotImage3.ImageUrl == bar)
             {
                 multiplier = 0;
             }
-            else if ((slotImage1.ImageUrl == cherry//if cherry in 1 or,
+            else if ((slotImage1.ImageUrl == cherry//if cherry in 1 only or,
                 && slotImage2.ImageUrl != cherry
                 && slotImage3.ImageUrl != cherry)
                 || (slotImage1.ImageUrl != cherry
-                && slotImage2.ImageUrl == cherry//or cherry in 2 or,
+                && slotImage2.ImageUrl == cherry//or cherry in 2 only or,
                 && slotImage3.ImageUrl != cherry)
                 || (slotImage1.ImageUrl != cherry
                 && slotImage2.ImageUrl != cherry
-                && slotImage3.ImageUrl == cherry))//or cherry in 3, x2
+                && slotImage3.ImageUrl == cherry))//or cherry in 3 only, x2
             {
                 multiplier = 2;
             }
             else if ((slotImage1.ImageUrl == cherry //if cherry in 1
-              && slotImage2.ImageUrl == cherry//and 2, or
+              && slotImage2.ImageUrl == cherry//and 2 only, or
               && slotImage3.ImageUrl != cherry)
               || (slotImage1.ImageUrl == cherry//if cherry in 1
               && slotImage2.ImageUrl != cherry
-              && slotImage3.ImageUrl == cherry)//and 3, or
+              && slotImage3.ImageUrl == cherry)//and 3 only, or
               || (slotImage1.ImageUrl != cherry
               && slotImage2.ImageUrl == cherry//if cherry in 2
-              && slotImage3.ImageUrl == cherry))//and 3, x3
+              && slotImage3.ImageUrl == cherry))//and 3 only, x3
             {
                 multiplier = 3;
             }
-            else if ((slotImage1.ImageUrl == cherry//if cherry in all 3,
-              && slotImage2.ImageUrl == cherry//x4
-              && slotImage3.ImageUrl == cherry))
+            else if ((slotImage1.ImageUrl == cherry
+              && slotImage2.ImageUrl == cherry
+              && slotImage3.ImageUrl == cherry))//if cherry in all 3, x4
             {
                 multiplier = 4;
             }
-            else if (slotImage1.ImageUrl == seven//if seven in all 3,
-              && slotImage2.ImageUrl == seven//x100
-              && slotImage3.ImageUrl == seven)
+            else if (slotImage1.ImageUrl == seven
+              && slotImage2.ImageUrl == seven
+              && slotImage3.ImageUrl == seven)//if seven in all 3, x100
             {
                 multiplier = 100;
             }
             else multiplier = 0;
 
-            winnings = bet * multiplier;
-            displayBetResult(bet, winnings);
+            calculateBalances(bet, multiplier);
         }
 
+        private void calculateBalances(decimal bet, decimal multiplier)
+        {
+            decimal winnings = bet * multiplier;
+            //playerBalance = (playerBalance - bet) + winnings;
+            decimal balance = decimal.Parse(moneyLabel.Text);
+            balance = (balance - bet) + winnings;
+            moneyLabel.Text = balance.ToString();
+            displayBetResult(bet, winnings);
+            //displayBalance(playerBalance);
+        }
+        /*
+        private void displayBalance(Decimal playerBalance)
+        {
+            moneyLabel.Text = String.Format("{0:C}", playerBalance);
+        }
+        */
         private void displayBetResult(decimal bet, decimal winnings)
         {
-            resultLabel.Text = String.Format("You bet {0:C} and won {1:C}.",bet, winnings);
-            calculateBalance(winnings, playerBalance, bet);
-        }
-
-        private void calculateBalance(decimal winnings, decimal playerBalance, decimal bet)
-        {
-            playerBalance = (playerBalance + winnings) - bet;
-            displayBalance(playerBalance);
+            resultLabel.Text = String.Format("You bet {0:C} and won {1:C}.", bet, winnings);
         }
     }
 }
