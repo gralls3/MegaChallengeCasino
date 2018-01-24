@@ -128,6 +128,10 @@ namespace MegaChallengeCasino
 
         private void calculateBalances(decimal bet, decimal multiplier)
         {
+            //proper way to calc balance after implementing ViewSate:
+                //balance -= bet;
+                //balance += winnings;
+                //ViewState["balance"] = balance;
             decimal winnings = bet * multiplier;
             //playerBalance = (playerBalance - bet) + winnings;
             decimal balance = decimal.Parse(moneyLabel.Text);
